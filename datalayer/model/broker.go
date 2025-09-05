@@ -14,6 +14,7 @@ type Broker struct {
 	Goos           string        `json:"goos,omitzero"            bson:"goos,omitempty"`            // GOOS
 	Goarch         string        `json:"goarch,omitzero"          bson:"goarch,omitempty"`          // GOARCH
 	Protocol       string        `json:"protocol,omitzero"        bson:"protocol,omitempty"`        // 连接协议 tcp/udp
+	Config         BrokerConfig  `json:"config,omitempty"         bson:"config,omitempty"`          // 配置
 	NetworkCards   NetworkCards  `json:"network_cards,omitzero"   bson:"network_cards,omitempty"`   // 网卡设备
 	AliveAt        time.Time     `json:"alive_at,omitzero"        bson:"alive_at,omitempty"`        // 最近心跳时间
 	RemoteAddr     string        `json:"remote_addr,omitzero"     bson:"remote_addr,omitempty"`     // 连接的远程地址
@@ -32,3 +33,7 @@ type NetworkCard struct {
 }
 
 type NetworkCards []*NetworkCard
+
+type BrokerConfig struct {
+	Listen string `json:"listen"`
+}
