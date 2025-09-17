@@ -1,13 +1,8 @@
 package linkhub
 
-import (
-	"context"
+import "context"
 
-	"github.com/xmx/aegis-common/transport"
-	"go.mongodb.org/mongo-driver/v2/bson"
-)
-
-func WithValue(parent context.Context, p transport.Peer[bson.ObjectID]) context.Context {
+func WithValue(parent context.Context, p Peer) context.Context {
 	if parent == nil {
 		parent = context.Background()
 	}
@@ -18,13 +13,13 @@ func WithValue(parent context.Context, p transport.Peer[bson.ObjectID]) context.
 	return context.WithValue(parent, defaultContextKey, p)
 }
 
-func FromContext(ctx context.Context) transport.Peer[bson.ObjectID] {
+func FromContext(ctx context.Context) Peer {
 	if ctx == nil {
 		return nil
 	}
 
 	val := ctx.Value(defaultContextKey)
-	if p, ok := val.(transport.Peer[bson.ObjectID]); ok {
+	if p, ok := val.(Peer); ok {
 		return p
 	}
 
