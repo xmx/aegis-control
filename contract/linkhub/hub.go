@@ -1,10 +1,13 @@
 package linkhub
 
 import (
+	"errors"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+var ErrDuplicateConnection = errors.New("节点重复连接上线")
 
 type Huber interface {
 	// Get 获取节点。

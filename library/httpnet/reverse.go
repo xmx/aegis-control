@@ -9,12 +9,12 @@ import (
 	"github.com/xmx/aegis-common/contract/problem"
 )
 
-func NewReverse(trap http.RoundTripper) *httputil.ReverseProxy {
+func NewReverse(trip http.RoundTripper) *httputil.ReverseProxy {
 	return &httputil.ReverseProxy{
 		Rewrite: func(pr *httputil.ProxyRequest) {
 			pr.SetXForwarded()
 		},
-		Transport: trap,
+		Transport: trip,
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
 			code := http.StatusBadGateway
 			pb := &problem.Details{
