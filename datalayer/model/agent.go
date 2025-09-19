@@ -13,6 +13,7 @@ type Agent struct {
 	Goarch         string                `json:"goarch"                   bson:"goarch"`                    // GOARCH
 	Status         bool                  `json:"status"                   bson:"status"`                    // 节点状态
 	Broker         *AgentConnectedBroker `json:"broker,omitzero"          bson:"broker,omitempty"`          // agent 所在的 broker
+	Networks       NodeNetworks          `json:"networks,omitzero"        bson:"networks,omitempty"`        // 网卡
 	AliveAt        time.Time             `json:"alive_at,omitzero"        bson:"alive_at,omitempty"`        // 最近心跳时间
 	Protocol       string                `json:"protocol,omitzero"        bson:"protocol,omitempty"`        // 连接协议 tcp/udp
 	RemoteAddr     string                `json:"remote_addr,omitzero"     bson:"remote_addr,omitempty"`     // 连接的远程地址
