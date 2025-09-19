@@ -44,7 +44,14 @@ func (s *Server) Serve(ctx context.Context, endpoint *quic.Endpoint) error {
 }
 
 func (s *Server) Close() error {
-	return s.endpoint.Close(context.Background())
+	if s.endpoint == nil {
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return s.endpoint.Close(ctx)
 }
 
 func (s *Server) serve(parent context.Context, conn *quic.Conn) {
