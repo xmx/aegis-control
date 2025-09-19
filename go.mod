@@ -4,7 +4,7 @@ go 1.25.1
 
 require (
 	github.com/xgfone/ship/v5 v5.3.2
-	github.com/xmx/aegis-common v0.0.0-20250919112606-9a86af6fea1d
+	github.com/xmx/aegis-common v0.0.0-20250919115602-5f974af07133
 	go.mongodb.org/mongo-driver/v2 v2.3.0
 	golang.org/x/net v0.44.0
 )
