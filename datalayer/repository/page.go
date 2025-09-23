@@ -1,22 +1,10 @@
 package repository
 
-import "iter"
-
 type Pages[E any, S ~[]*E] struct {
 	Page    int64 `json:"page"    bson:"page"`
 	Size    int64 `json:"size"    bson:"size"`
 	Count   int64 `json:"count"   bson:"count"`
 	Records S     `json:"records" bson:"records"`
-}
-
-func (pgs Pages[E, S]) All() iter.Seq2[int, *E] {
-	return func(yield func(int, *E) bool) {
-		for i, e := range pgs.Records {
-			if !yield(i, e) {
-				return
-			}
-		}
-	}
 }
 
 type PageHelper interface {

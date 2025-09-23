@@ -25,5 +25,21 @@ type Broker struct {
 }
 
 type BrokerConfig struct {
-	Listen string `json:"listen"`
+	Server BrokerServerConfig `json:"server" bson:"server"`
+	Logger BrokerLoggerConfig `json:"logger" bson:"logger"`
+}
+
+type BrokerServerConfig struct {
+	Addr string `json:"addr" bson:"addr"`
+}
+
+type BrokerLoggerConfig struct {
+	Level      string `json:"level"      bson:"level"      validate:"omitempty,oneof=DEBUG INFO WARN ERROR"`
+	Console    bool   `json:"console"    bson:"console"`
+	Filename   string `json:"filename"   bson:"filename"`
+	MaxSize    int    `json:"maxsize"    bson:"maxsize"    validate:"gte=0"`
+	MaxAge     int    `json:"maxage"     bson:"maxage"     validate:"gte=0"`
+	MaxBackups int    `json:"maxbackups" bson:"maxbackups" validate:"gte=0"`
+	LocalTime  bool   `json:"localtime"  bson:"localtime"`
+	Compress   bool   `json:"compress"   bson:"compress"`
 }
