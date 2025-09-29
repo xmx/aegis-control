@@ -3,7 +3,7 @@ module github.com/xmx/aegis-control
 go 1.25.1
 
 require (
-	github.com/xmx/aegis-common v0.0.0-20250928093816-b90e30f5e517
+	github.com/xmx/aegis-common v0.0.0-20250929113014-4123b9a1543d
 	go.mongodb.org/mongo-driver/v2 v2.3.0
 	golang.org/x/crypto v0.42.0
 	golang.org/x/net v0.44.0

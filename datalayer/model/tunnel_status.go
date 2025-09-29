@@ -9,4 +9,6 @@ type TunnelStatus struct {
 	Protocol       string    `json:"protocol,omitzero"        bson:"protocol,omitempty"`
 	Subprotocol    string    `json:"subprotocol,omitzero"     bson:"subprotocol,omitempty"`
 	RemoteAddr     string    `json:"remote_addr,omitzero"     bson:"remote_addr,omitempty"`
+	ReceiveBytes   uint64    `json:"receive_bytes,omitzero"   bson:"receive_bytes,omitempty"`  // broker/agent 为主体
+	TransmitBytes  uint64    `json:"transmit_bytes,omitzero"  bson:"transmit_bytes,omitempty"` // broker/agent 为主体
 }
