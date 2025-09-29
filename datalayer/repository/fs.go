@@ -29,6 +29,7 @@ type FS interface {
 	OpenContext(ctx context.Context, name string) (fs.File, error)
 	Entries(ctx context.Context, name string) (model.FSs, error)
 	Create(ctx context.Context, name string, rd io.Reader) (*model.FS, error)
+	Upload(ctx context.Context, name string, rd io.Reader) (*model.FS, error)
 	Mkdir(ctx context.Context, name string) error
 	Remove(ctx context.Context, name string) error
 }
@@ -195,7 +196,7 @@ func (r *fsRepo) Create(ctx context.Context, name string, rd io.Reader) (*model.
 		}
 	} else if !parent.IsDir() { // 检查父节点是否是目录
 		pe := errors.New("not a directory")
-		return nil, &fs.PathError{Op: "read", Path: parentDir, Err: pe}
+		return nil, &fs.PathError{Op: "read", Path: fp, Err: pe}
 	}
 
 	// 先插入数据
@@ -215,24 +216,13 @@ func (r *fsRepo) Create(ctx context.Context, name string, rd io.Reader) (*model.
 		return nil, err
 	}
 
-	stm, err := r.bucket.OpenUploadStream(ctx, fp)
-	if err != nil {
-		return nil, err
-	}
-	defer stm.Close()
-
 	id := ret.InsertedID.(bson.ObjectID)
-	fileID, _ := stm.FileID.(bson.ObjectID)
-
-	chw := r.newChecksumWriter()
-	wrt := io.MultiWriter(chw, stm)
-	cnt, err1 := io.Copy(wrt, rd)
-	if err1 != nil { // 出错就删除数据
+	fileID, sum, cnt, err1 := r.upload(ctx, fp, rd)
+	if err1 != nil {
 		_, _ = r.DeleteOne(ctx, id)
 		return nil, err1
 	}
 
-	sum := chw.Sum()
 	updatedAt := time.Now()
 	update := bson.M{"$set": bson.M{
 		"size": cnt, "file_id": fileID, "checksum": sum, "updated_at": updatedAt,
@@ -247,6 +237,60 @@ func (r *fsRepo) Create(ctx context.Context, name string, rd io.Reader) (*model.
 	_ = r.bucket.Delete(ctx, id)
 
 	return nil, err
+}
+
+func (r *fsRepo) Upload(ctx context.Context, name string, rd io.Reader) (*model.FS, error) {
+	updatedAt := time.Now()
+
+	// 检查文件是否存在
+	fp := r.normalization(name)
+	dat, err := r.FindOne(ctx, bson.M{"full_path": fp})
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fs.ErrNotExist
+		}
+		return nil, err
+	} else if dat.IsDir() {
+		pe := errors.New("bad file descriptor")
+		return nil, &fs.PathError{Op: "write", Path: fp, Err: pe}
+	}
+
+	fileID, sum, cnt, err1 := r.upload(ctx, fp, rd)
+	if err1 != nil {
+		return nil, err1
+	}
+	update := bson.M{"$set": bson.M{
+		"size": cnt, "file_id": fileID, "checksum": sum, "updated_at": updatedAt,
+	}}
+	if _, err = r.UpdateByID(ctx, dat.ID, update); err != nil {
+		_ = r.bucket.Delete(ctx, fileID) // 出错就删除掉刚上传的文件。
+		return nil, err
+	}
+	// 删除掉老的文件
+	_ = r.bucket.Delete(ctx, dat.FileID)
+	dat.FileID, dat.Checksum, dat.Size, dat.UpdatedAt = fileID, sum, cnt, updatedAt
+
+	return dat, nil
+
+}
+
+// upload 上传文件流，并返回文件ID、文件哈希、文件大小。
+func (r *fsRepo) upload(ctx context.Context, name string, rd io.Reader) (bson.ObjectID, model.Checksum, int64, error) {
+	stm, err := r.bucket.OpenUploadStream(ctx, name)
+	if err != nil {
+		return bson.NilObjectID, model.Checksum{}, 0, err
+	}
+	defer stm.Close()
+
+	hsw := r.newChecksumWriter()
+	cnt, err1 := io.Copy(io.MultiWriter(hsw, stm), rd)
+	if err1 != nil {
+		return bson.NilObjectID, model.Checksum{}, 0, err1
+	}
+	sum := hsw.Sum()
+	fileID, _ := stm.FileID.(bson.ObjectID)
+
+	return fileID, sum, cnt, nil
 }
 
 func (r *fsRepo) Mkdir(ctx context.Context, name string) error {
