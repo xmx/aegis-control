@@ -27,7 +27,7 @@ type FS interface {
 	Repository[bson.ObjectID, model.FS, model.FSs]
 
 	OpenContext(ctx context.Context, name string) (fs.File, error)
-	Entries(ctx context.Context, name string) (model.FSs, error)
+	List(ctx context.Context, name string) (model.FSs, error)
 	Create(ctx context.Context, name string, rd io.Reader) (*model.FS, error)
 	Upload(ctx context.Context, name string, rd io.Reader) (*model.FS, error)
 	Mkdir(ctx context.Context, name string) error
@@ -88,7 +88,7 @@ func (r *fsRepo) ReadDir(name string) ([]fs.DirEntry, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	fss, err := r.Entries(ctx, name)
+	fss, err := r.List(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (r *fsRepo) OpenContext(ctx context.Context, name string) (fs.File, error) 
 	return &fsFile{file: info, stm: stm}, nil
 }
 
-func (r *fsRepo) Entries(ctx context.Context, name string) (model.FSs, error) {
+func (r *fsRepo) List(ctx context.Context, name string) (model.FSs, error) {
 	fp := r.normalization(name)
 	info, err := r.FindOne(ctx, bson.M{"full_path": fp})
 	if err != nil {
