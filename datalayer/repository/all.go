@@ -14,6 +14,7 @@ type All interface {
 	Agent() Agent
 	Broker() Broker
 	Certificate() Certificate
+	FS() FS
 
 	GridFSBucket(opts ...options.Lister[options.BucketOptions]) *mongo.GridFSBucket
 	CreateIndex(ctx context.Context) error
@@ -25,6 +26,7 @@ func NewAll(db *mongo.Database) All {
 		agent:       NewAgent(db),
 		broker:      NewBroker(db),
 		certificate: NewCertificate(db),
+		fs:          NewFS(db),
 	}
 }
 
@@ -33,6 +35,7 @@ type allRepo struct {
 	agent       Agent
 	broker      Broker
 	certificate Certificate
+	fs          FS
 }
 
 func (ar allRepo) DB() *mongo.Database   { return ar.db }
@@ -41,6 +44,7 @@ func (ar allRepo) Client() *mongo.Client { return ar.db.Client() }
 func (ar allRepo) Agent() Agent             { return ar.agent }
 func (ar allRepo) Broker() Broker           { return ar.broker }
 func (ar allRepo) Certificate() Certificate { return ar.certificate }
+func (ar allRepo) FS() FS                   { return ar.fs }
 
 func (ar allRepo) GridFSBucket(opts ...options.Lister[options.BucketOptions]) *mongo.GridFSBucket {
 	return ar.db.GridFSBucket(opts...)
@@ -51,6 +55,7 @@ func (ar allRepo) CreateIndex(ctx context.Context) error {
 		ar.agent,
 		ar.broker,
 		ar.certificate,
+		ar.fs,
 	}
 	for _, f := range fields {
 		idx, ok := f.(CreateIndexer)
