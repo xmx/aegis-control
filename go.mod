@@ -3,6 +3,7 @@ module github.com/xmx/aegis-control
 go 1.25.1
 
 require (
+	github.com/quic-go/quic-go v0.54.1
 	github.com/xmx/aegis-common v0.0.0-20250929113014-4123b9a1543d
 	go.mongodb.org/mongo-driver/v2 v2.3.0
 	golang.org/x/crypto v0.42.0
@@ -13,7 +14,6 @@ require (
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/quic-go/quic-go v0.54.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

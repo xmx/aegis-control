@@ -13,17 +13,17 @@ func WithValue(parent context.Context, p Peer) context.Context {
 	return context.WithValue(parent, defaultContextKey, p)
 }
 
-func FromContext(ctx context.Context) Peer {
+func FromContext(ctx context.Context) (Peer, bool) {
 	if ctx == nil {
-		return nil
+		return nil, false
 	}
 
 	val := ctx.Value(defaultContextKey)
-	if p, ok := val.(Peer); ok {
-		return p
+	if p, _ := val.(Peer); p != nil {
+		return p, true
 	}
 
-	return nil
+	return nil, false
 }
 
 var defaultContextKey = contextKey{}
@@ -31,5 +31,5 @@ var defaultContextKey = contextKey{}
 type contextKey struct{}
 
 func (contextKey) String() string {
-	return "transport-peer-context-key"
+	return "tunnel-peer-context-key"
 }
