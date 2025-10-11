@@ -3,11 +3,11 @@ module github.com/xmx/aegis-control
 go 1.25.1
 
 require (
-	github.com/quic-go/quic-go v0.54.1
-	github.com/xmx/aegis-common v0.0.0-20250929113014-4123b9a1543d
-	go.mongodb.org/mongo-driver/v2 v2.3.0
-	golang.org/x/crypto v0.42.0
-	golang.org/x/net v0.44.0
+	github.com/quic-go/quic-go v0.55.0
+	github.com/xmx/aegis-common v0.0.0-20251011055325-15895a3f7de7
+	go.mongodb.org/mongo-driver/v2 v2.3.1
+	golang.org/x/crypto v0.43.0
+	golang.org/x/net v0.46.0
 )
 
 require (
@@ -20,9 +20,9 @@ require (
 	github.com/xtaci/smux v1.5.35 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	go.uber.org/mock v0.6.0 // indirect
-	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
-	golang.org/x/tools v0.37.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 )
