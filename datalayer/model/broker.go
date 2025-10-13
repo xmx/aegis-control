@@ -19,6 +19,8 @@ type Broker struct {
 	CreatedAt   time.Time     `json:"created_at,omitzero"      bson:"created_at,omitempty"`   // 数据创建时间
 }
 
+type Brokers []*Broker
+
 type BrokerConfig struct {
 	Server BrokerServerConfig `json:"server" bson:"server"`
 	Logger BrokerLoggerConfig `json:"logger" bson:"logger"`

@@ -10,12 +10,12 @@ import (
 )
 
 type Certificate interface {
-	Repository[bson.ObjectID, model.Certificate, []*model.Certificate]
+	Repository[bson.ObjectID, model.Certificate, model.Certificates]
 }
 
 func NewCertificate(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) Certificate {
 	coll := db.Collection("certificate", opts...)
-	repo := NewRepository[bson.ObjectID, model.Certificate, []*model.Certificate](coll)
+	repo := NewRepository[bson.ObjectID, model.Certificate, model.Certificates](coll)
 
 	return &certificateRepo{
 		Repository: repo,
@@ -23,7 +23,7 @@ func NewCertificate(db *mongo.Database, opts ...options.Lister[options.Collectio
 }
 
 type certificateRepo struct {
-	Repository[bson.ObjectID, model.Certificate, []*model.Certificate]
+	Repository[bson.ObjectID, model.Certificate, model.Certificates]
 }
 
 func (r *certificateRepo) CreateIndex(ctx context.Context) error {

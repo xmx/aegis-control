@@ -10,12 +10,12 @@ import (
 )
 
 type Agent interface {
-	Repository[bson.ObjectID, model.Agent, []*model.Agent]
+	Repository[bson.ObjectID, model.Agent, model.Agents]
 }
 
 func NewAgent(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) Agent {
 	coll := db.Collection("agent", opts...)
-	repo := NewRepository[bson.ObjectID, model.Agent, []*model.Agent](coll)
+	repo := NewRepository[bson.ObjectID, model.Agent, model.Agents](coll)
 
 	return &agentRepo{
 		Repository: repo,
@@ -23,7 +23,7 @@ func NewAgent(db *mongo.Database, opts ...options.Lister[options.CollectionOptio
 }
 
 type agentRepo struct {
-	Repository[bson.ObjectID, model.Agent, []*model.Agent]
+	Repository[bson.ObjectID, model.Agent, model.Agents]
 }
 
 func (r *agentRepo) CreateIndex(ctx context.Context) error {

@@ -10,12 +10,12 @@ import (
 )
 
 type Broker interface {
-	Repository[bson.ObjectID, model.Broker, []*model.Broker]
+	Repository[bson.ObjectID, model.Broker, model.Brokers]
 }
 
 func NewBroker(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) Broker {
 	coll := db.Collection("broker", opts...)
-	repo := NewRepository[bson.ObjectID, model.Broker, []*model.Broker](coll)
+	repo := NewRepository[bson.ObjectID, model.Broker, model.Brokers](coll)
 
 	return &brokerRepo{
 		Repository: repo,
@@ -23,7 +23,7 @@ func NewBroker(db *mongo.Database, opts ...options.Lister[options.CollectionOpti
 }
 
 type brokerRepo struct {
-	Repository[bson.ObjectID, model.Broker, []*model.Broker]
+	Repository[bson.ObjectID, model.Broker, model.Brokers]
 }
 
 func (r *brokerRepo) CreateIndex(ctx context.Context) error {

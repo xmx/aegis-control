@@ -31,6 +31,8 @@ type Certificate struct {
 	CreatedAt          time.Time           `json:"created_at,omitzero"   bson:"created_at,omitempty"`
 }
 
+type Certificates []*Certificate
+
 type CertificatePKIXName struct {
 	Country            []string `json:"country"             bson:"country"`
 	Organization       []string `json:"organization"        bson:"organization"`

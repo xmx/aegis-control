@@ -22,3 +22,5 @@ type AgentConnectedBroker struct {
 	ID   bson.ObjectID `json:"id,omitzero"   bson:"id,omitempty"`
 	Name string        `json:"name,omitzero" bson:"name,omitempty"`
 }
+
+type Agents []*Agent
