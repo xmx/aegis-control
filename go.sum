@@ -30,6 +30,8 @@ github.com/xmx/aegis-common v0.0.0-20251011100201-1a713f9530ee h1:VN7Uj2agbVvEjo
 github.com/xmx/aegis-common v0.0.0-20251011100201-1a713f9530ee/go.mod h1:Rbi5zIvkolbWmlqP5HFvx4C+MKXEPOI+DYkGlkezEd8=
 github.com/xmx/aegis-common v0.0.0-20251013124854-35a1da585f1a h1:Rrs+RZ266CnkKYTZmsw0aO1/aJFM+8VlsytINWeE5NI=
 github.com/xmx/aegis-common v0.0.0-20251013124854-35a1da585f1a/go.mod h1:Rbi5zIvkolbWmlqP5HFvx4C+MKXEPOI+DYkGlkezEd8=
+github.com/xmx/aegis-common v0.0.0-20251014095326-d7e73a94b1f8 h1:rHc1YAxhDNNHsUhlMUCHEXsPwxxfGzvqD36QSJu2FNo=
+github.com/xmx/aegis-common v0.0.0-20251014095326-d7e73a94b1f8/go.mod h1:Rbi5zIvkolbWmlqP5HFvx4C+MKXEPOI+DYkGlkezEd8=
 github.com/xtaci/smux v1.5.35 h1:RosihGJBeaS8gxOZ17HNxbhONwnqQwNwusHx4+SEGhk=
 github.com/xtaci/smux v1.5.35/go.mod h1:OMlQbT5vcgl2gb49mFkYo6SMf+zP3rcjcwQz7ZU7IGY=
 github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 h1:ilQV1hzziu+LLM3zUTJ0trRztfwgjqKnBWNtSRkbmwM=
