@@ -13,22 +13,24 @@ type Peer interface {
 	Muxer() tundial.Muxer
 }
 
+type Peers []Peer
+
 func NewPeer(id bson.ObjectID, mux tundial.Muxer) Peer {
-	return &peer{
+	return &muxerPeer{
 		id:  id,
 		mux: mux,
 	}
 }
 
-type peer struct {
+type muxerPeer struct {
 	id  bson.ObjectID
 	mux tundial.Muxer
 }
 
-func (p peer) ID() bson.ObjectID {
+func (p *muxerPeer) ID() bson.ObjectID {
 	return p.id
 }
 
-func (p peer) Muxer() tundial.Muxer {
+func (p *muxerPeer) Muxer() tundial.Muxer {
 	return p.mux
 }

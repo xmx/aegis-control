@@ -16,6 +16,8 @@ type Huber interface {
 	Del(host string) Peer
 
 	DelByID(id bson.ObjectID) Peer
+
+	Peers() Peers
 }
 
 func NewHub(initSize ...int) Huber {
@@ -76,6 +78,21 @@ func (sm *safeMap) DelByID(id bson.ObjectID) Peer {
 	return sm.Del(host)
 }
 
+func (sm *safeMap) Peers() Peers {
+	return sm.snapshot()
+}
+
 func (*safeMap) toHost(id bson.ObjectID) string {
 	return id.Hex()
+}
+
+func (sm *safeMap) snapshot() []Peer {
+	sm.mutex.RLock()
+	peers := make([]Peer, 0, len(sm.peers))
+	for _, peer := range sm.peers {
+		peers = append(peers, peer)
+	}
+	sm.mutex.RUnlock()
+
+	return peers
 }
