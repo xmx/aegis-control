@@ -34,5 +34,4 @@ type ExecuteStat struct {
 	Workdir    string   `json:"workdir,omitzero"    bson:"workdir,omitempty"`
 	Executable string   `json:"executable,omitzero" bson:"executable,omitempty"`
 	Username   string   `json:"username,omitzero"   bson:"username,omitempty"`
-	UID        string   `json:"uid,omitzero"        bson:"uid,omitempty"`
 }
