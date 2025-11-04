@@ -1,6 +1,8 @@
 package mongodb
 
 import (
+	"errors"
+
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/connstring"
@@ -11,6 +13,10 @@ func Open(uri string, opts ...*options.ClientOptions) (*mongo.Database, error) {
 	if err != nil {
 		return nil, err
 	}
+	dbname := pu.Database
+	if dbname == "" {
+		return nil, errors.New("database name is required")
+	}
 
 	opt := options.Client().ApplyURI(uri)
 	opts = append(opts, opt)
@@ -19,7 +25,7 @@ func Open(uri string, opts ...*options.ClientOptions) (*mongo.Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbname := pu.Database
+
 	db := cli.Database(dbname)
 
 	return db, nil
