@@ -10,33 +10,27 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-type FileSaveResult struct {
-	FileID   bson.ObjectID  `json:"file_id"  bson:"file_id"`
-	Length   int64          `json:"length"   bson:"length"`
-	Checksum model.Checksum `json:"checksum" bson:"checksum"`
-}
-
-type AgentRelease interface {
-	Repository[bson.ObjectID, model.AgentRelease, model.AgentReleases]
+type BrokerRelease interface {
+	Repository[bson.ObjectID, model.BrokerRelease, model.BrokerReleases]
 	SaveFile(ctx context.Context, rd io.Reader, filename string) (*FileSaveResult, error)
 	OpenFile(ctx context.Context, fileID bson.ObjectID) (*mongo.GridFSDownloadStream, error)
 	DeleteFile(ctx context.Context, fileID bson.ObjectID) error
 }
 
-func NewAgentRelease(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) AgentRelease {
-	coll := db.Collection("agent_release", opts...)
-	repo := NewRepository[bson.ObjectID, model.AgentRelease, model.AgentReleases](coll)
+func NewBrokerRelease(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) BrokerRelease {
+	coll := db.Collection("broker_release", opts...)
+	repo := NewRepository[bson.ObjectID, model.BrokerRelease, model.BrokerReleases](coll)
 
-	return &agentReleaseRepo{
+	return &brokerReleaseRepo{
 		Repository: repo,
 	}
 }
 
-type agentReleaseRepo struct {
-	Repository[bson.ObjectID, model.AgentRelease, model.AgentReleases]
+type brokerReleaseRepo struct {
+	Repository[bson.ObjectID, model.BrokerRelease, model.BrokerReleases]
 }
 
-func (r *agentReleaseRepo) Bucket(opts ...options.Lister[options.BucketOptions]) *mongo.GridFSBucket {
+func (r *brokerReleaseRepo) Bucket(opts ...options.Lister[options.BucketOptions]) *mongo.GridFSBucket {
 	name := r.Name()
 	opt := options.GridFSBucket().SetName(name)
 	opts = append(opts, opt)
@@ -44,7 +38,7 @@ func (r *agentReleaseRepo) Bucket(opts ...options.Lister[options.BucketOptions])
 	return r.Database().GridFSBucket(opts...)
 }
 
-func (r *agentReleaseRepo) SaveFile(ctx context.Context, rd io.Reader, filename string) (*FileSaveResult, error) {
+func (r *brokerReleaseRepo) SaveFile(ctx context.Context, rd io.Reader, filename string) (*FileSaveResult, error) {
 	fileID := bson.NewObjectID()
 	bucket := r.Bucket()
 	stm, err := bucket.OpenUploadStreamWithID(ctx, fileID, filename)
@@ -69,17 +63,17 @@ func (r *agentReleaseRepo) SaveFile(ctx context.Context, rd io.Reader, filename 
 	return ret, nil
 }
 
-func (r *agentReleaseRepo) OpenFile(ctx context.Context, fileID bson.ObjectID) (*mongo.GridFSDownloadStream, error) {
+func (r *brokerReleaseRepo) OpenFile(ctx context.Context, fileID bson.ObjectID) (*mongo.GridFSDownloadStream, error) {
 	bucket := r.Bucket()
 	return bucket.OpenDownloadStream(ctx, fileID)
 }
 
-func (r *agentReleaseRepo) DeleteFile(ctx context.Context, fileID bson.ObjectID) error {
+func (r *brokerReleaseRepo) DeleteFile(ctx context.Context, fileID bson.ObjectID) error {
 	bucket := r.Bucket()
 	return bucket.Delete(ctx, fileID)
 }
 
-func (r *agentReleaseRepo) CreateIndex(ctx context.Context) error {
+func (r *brokerReleaseRepo) CreateIndex(ctx context.Context) error {
 	idx := []mongo.IndexModel{
 		{
 			Keys: bson.D{
