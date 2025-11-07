@@ -9,6 +9,7 @@ import (
 type Broker struct {
 	ID          bson.ObjectID `json:"id,omitzero"              bson:"_id,omitempty"`          // ID
 	Name        string        `json:"name"                     bson:"name"`                   // 名字
+	Exposes     []string      `json:"exposes"                  bson:"exposes"`                // 暴露地址
 	Secret      string        `json:"-"                        bson:"secret,omitempty"`       // 连接密钥
 	Status      bool          `json:"status"                   bson:"status,omitempty"`       // 状态
 	Config      BrokerConfig  `json:"config,omitempty"         bson:"config,omitempty"`       // 配置

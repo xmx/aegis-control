@@ -6,7 +6,7 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/xmx/aegis-common/contract/problem"
+	"github.com/xmx/aegis-common/problem"
 )
 
 func NewReverse(trip http.RoundTripper) *httputil.ReverseProxy {

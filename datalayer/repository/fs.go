@@ -2,13 +2,7 @@ package repository
 
 import (
 	"context"
-	"crypto/md5"
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
-	"encoding/hex"
 	"errors"
-	"hash"
 	"io"
 	"io/fs"
 	"path"
@@ -19,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
-	"golang.org/x/crypto/sha3"
 )
 
 type FS interface {
@@ -271,7 +264,6 @@ func (r *fsRepo) Upload(ctx context.Context, name string, rd io.Reader) (*model.
 	dat.FileID, dat.Checksum, dat.Size, dat.UpdatedAt = fileID, sum, cnt, updatedAt
 
 	return dat, nil
-
 }
 
 // upload 上传文件流，并返回文件ID、文件哈希、文件大小。
@@ -282,7 +274,7 @@ func (r *fsRepo) upload(ctx context.Context, name string, rd io.Reader) (bson.Ob
 	}
 	defer stm.Close()
 
-	hsw := r.newChecksumWriter()
+	hsw := model.NewHashWriter()
 	cnt, err1 := io.Copy(io.MultiWriter(hsw, stm), rd)
 	if err1 != nil {
 		return bson.NilObjectID, model.Checksum{}, 0, err1
@@ -342,49 +334,4 @@ func (r *fsRepo) Mkdir(ctx context.Context, name string) error {
 
 func (r *fsRepo) normalization(name string) string {
 	return path.Join("/", name)
-}
-
-func (r *fsRepo) newChecksumWriter() *checksumWriter {
-	return &checksumWriter{
-		m5: md5.New(),
-		s1: sha1.New(),
-		s2: sha256.New(),
-		s5: sha512.New(),
-		s3: sha3.New256(),
-	}
-}
-
-type checksumWriter struct {
-	m5 hash.Hash // MD5
-	s1 hash.Hash // SHA1
-	s2 hash.Hash // SHA256
-	s5 hash.Hash // SHA512
-	s3 hash.Hash // SHA3-256
-}
-
-func (w *checksumWriter) Write(p []byte) (int, error) {
-	n := len(p)
-	_, _ = w.m5.Write(p)
-	_, _ = w.s1.Write(p)
-	_, _ = w.s2.Write(p)
-	_, _ = w.s5.Write(p)
-	_, _ = w.s3.Write(p)
-
-	return n, nil
-}
-
-func (w *checksumWriter) Sum() model.Checksum {
-	m5s := w.m5.Sum(nil)
-	s1s := w.s1.Sum(nil)
-	s2s := w.s2.Sum(nil)
-	s5s := w.s5.Sum(nil)
-	s3s := w.s3.Sum(nil)
-
-	return model.Checksum{
-		MD5:     hex.EncodeToString(m5s),
-		SHA1:    hex.EncodeToString(s1s),
-		SHA256:  hex.EncodeToString(s2s),
-		SHA512:  hex.EncodeToString(s3s),
-		SHA3256: hex.EncodeToString(s5s),
-	}
 }

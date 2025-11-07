@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type All interface {
@@ -12,47 +11,47 @@ type All interface {
 	Client() *mongo.Client
 
 	Agent() Agent
+	AgentRelease() AgentRelease
 	Broker() Broker
 	Certificate() Certificate
 	FS() FS
 
-	GridFSBucket(opts ...options.Lister[options.BucketOptions]) *mongo.GridFSBucket
 	CreateIndex(ctx context.Context) error
 }
 
 func NewAll(db *mongo.Database) All {
 	return allRepo{
-		db:          db,
-		agent:       NewAgent(db),
-		broker:      NewBroker(db),
-		certificate: NewCertificate(db),
-		fs:          NewFS(db),
+		db:           db,
+		agent:        NewAgent(db),
+		agentRelease: NewAgentRelease(db),
+		broker:       NewBroker(db),
+		certificate:  NewCertificate(db),
+		fs:           NewFS(db),
 	}
 }
 
 type allRepo struct {
-	db          *mongo.Database
-	agent       Agent
-	broker      Broker
-	certificate Certificate
-	fs          FS
+	db           *mongo.Database
+	agent        Agent
+	agentRelease AgentRelease
+	broker       Broker
+	certificate  Certificate
+	fs           FS
 }
 
 func (ar allRepo) DB() *mongo.Database   { return ar.db }
 func (ar allRepo) Client() *mongo.Client { return ar.db.Client() }
 
-func (ar allRepo) Agent() Agent             { return ar.agent }
-func (ar allRepo) Broker() Broker           { return ar.broker }
-func (ar allRepo) Certificate() Certificate { return ar.certificate }
-func (ar allRepo) FS() FS                   { return ar.fs }
-
-func (ar allRepo) GridFSBucket(opts ...options.Lister[options.BucketOptions]) *mongo.GridFSBucket {
-	return ar.db.GridFSBucket(opts...)
-}
+func (ar allRepo) Agent() Agent               { return ar.agent }
+func (ar allRepo) AgentRelease() AgentRelease { return ar.agentRelease }
+func (ar allRepo) Broker() Broker             { return ar.broker }
+func (ar allRepo) Certificate() Certificate   { return ar.certificate }
+func (ar allRepo) FS() FS                     { return ar.fs }
 
 func (ar allRepo) CreateIndex(ctx context.Context) error {
 	fields := []any{
 		ar.agent,
+		ar.agentRelease,
 		ar.broker,
 		ar.certificate,
 		ar.fs,
