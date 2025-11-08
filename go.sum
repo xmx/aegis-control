@@ -22,6 +22,8 @@ github.com/xdg-go/stringprep v1.0.4 h1:XLI/Ng3O1Atzq0oBs3TWm+5ZVgkq2aqdlvP9JtoZ6
 github.com/xdg-go/stringprep v1.0.4/go.mod h1:mPGuuIYwz7CmR2bT9j4GbQqutWS1zV24gijq1dTyGkM=
 github.com/xmx/aegis-common v0.0.0-20251107090048-27102d915650 h1:WAXOo946XvNtGWOXAdy4u3v3mXGd9uz3VpQf5agpqaQ=
 github.com/xmx/aegis-common v0.0.0-20251107090048-27102d915650/go.mod h1:NQf5j4Fkhfa/JWdi4oy+gDzoi4ZlgMBdW2xgoKyRsmg=
+github.com/xmx/aegis-common v0.0.0-20251107100637-c4e2500ca46c h1:yRY2MADgc+CskEnsWasO4jA4mSpq8g8zSdPpYBtMvt0=
+github.com/xmx/aegis-common v0.0.0-20251107100637-c4e2500ca46c/go.mod h1:NQf5j4Fkhfa/JWdi4oy+gDzoi4ZlgMBdW2xgoKyRsmg=
 github.com/xtaci/smux v1.5.35 h1:RosihGJBeaS8gxOZ17HNxbhONwnqQwNwusHx4+SEGhk=
 github.com/xtaci/smux v1.5.35/go.mod h1:OMlQbT5vcgl2gb49mFkYo6SMf+zP3rcjcwQz7ZU7IGY=
 github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 h1:ilQV1hzziu+LLM3zUTJ0trRztfwgjqKnBWNtSRkbmwM=
