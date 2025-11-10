@@ -59,15 +59,12 @@ func (ar *allRepo) Setting() Setting             { return ar.setting }
 
 func (ar *allRepo) CreateIndex(ctx context.Context) error {
 	rv := reflect.ValueOf(ar)
-	rt := rv.Type()
 	for i := range rv.NumMethod() {
 		mv := rv.Method(i)
-		mt := rt.Method(i)
-		ci := ar.reflectCall(mt, mv)
+		ci := ar.reflectCall(mv, mv.Type())
 		if ci == nil {
 			continue
 		}
-
 		if err := ci.CreateIndex(ctx); err != nil {
 			return err
 		}
@@ -76,25 +73,28 @@ func (ar *allRepo) CreateIndex(ctx context.Context) error {
 	return nil
 }
 
-type IndexCreator interface {
-	CreateIndex(context.Context) error
-}
-
-func (ar *allRepo) reflectCall(method reflect.Method, mv reflect.Value) IndexCreator {
-	mt := method.Type
-	if mt.NumIn() != 1 || mt.NumOut() != 1 {
+func (ar *allRepo) reflectCall(mv reflect.Value, mt reflect.Type) indexCreator {
+	if mt.NumIn() != 0 || mt.NumOut() != 1 {
 		return nil
 	}
 
-	rets := mv.Call([]reflect.Value{})
+	rets := mv.Call(nil)
 	if len(rets) != 1 {
 		return nil
 	}
 	ret := rets[0]
+	if ret.IsNil() || !ret.IsValid() {
+		return nil
+	}
+
 	val := ret.Interface()
-	if ic, ok := val.(IndexCreator); ok {
+	if ic, ok := val.(indexCreator); ok {
 		return ic
 	}
 
 	return nil
+}
+
+type indexCreator interface {
+	CreateIndex(context.Context) error
 }

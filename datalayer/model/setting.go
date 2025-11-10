@@ -23,3 +23,17 @@ type ExposeAddress struct {
 }
 
 type ExposeAddresses []*ExposeAddress
+
+func (eas ExposeAddresses) Addresses() []string {
+	rets := make([]string, 0, 10)
+	uniq := make(map[string]struct{}, 8)
+	for _, ea := range eas {
+		addr := ea.Addr
+		if _, exists := uniq[addr]; !exists {
+			uniq[addr] = struct{}{}
+			rets = append(rets, addr)
+		}
+	}
+
+	return rets
+}
