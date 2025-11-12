@@ -4,7 +4,7 @@ go 1.25.4
 
 require (
 	github.com/quic-go/quic-go v0.56.0
-	github.com/xmx/aegis-common v0.0.0-20251112092434-15dda1e977a6
+	github.com/xmx/aegis-common v0.0.0-20251112112116-9394e287f5be
 	go.mongodb.org/mongo-driver/v2 v2.4.0
 	golang.org/x/net v0.47.0
 )
