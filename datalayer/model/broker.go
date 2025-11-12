@@ -11,7 +11,7 @@ type Broker struct {
 	Name        string          `json:"name"                  bson:"name"`                   // 名字
 	Exposes     ExposeAddresses `json:"exposes"               bson:"exposes"`                // 暴露地址
 	Secret      string          `json:"-"                     bson:"secret,omitempty"`       // 连接密钥
-	Status      bool            `json:"status"                bson:"status,omitempty"`       // 状态
+	Status      bool            `json:"status"                bson:"status"`                 // 状态
 	Config      BrokerConfig    `json:"config,omitempty"      bson:"config,omitempty"`       // 配置
 	Networks    NodeNetworks    `json:"networks,omitzero"     bson:"networks,omitempty"`     // 网卡设备
 	TunnelStat  *TunnelStat     `json:"tunnel_stat,omitzero"  bson:"tunnel_stat,omitempty"`  // 通道连接状态
