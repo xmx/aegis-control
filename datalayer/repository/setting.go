@@ -40,7 +40,7 @@ func (r *settingRepo) Upsert(ctx context.Context, data *model.SettingData) error
 	}
 
 	now := time.Now()
-	mod := &model.Setting{SettingData: sd, UpdatedAt: now}
+	mod := &model.Setting{Exposes: sd.Exposes, UpdatedAt: now}
 	opt := options.UpdateOne().SetUpsert(true)
 	update := bson.M{"$set": mod, "$setOnInsert": bson.M{"created_at": now}}
 	_, err := r.repo.UpdateOne(ctx, update, opt)
