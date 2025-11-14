@@ -14,7 +14,7 @@ type BrokerRelease struct {
 	Goarch    string        `bson:"goarch,omitempty"     json:"goarch"`
 	Length    int64         `bson:"length,omitempty"     json:"length"`
 	Semver    string        `bson:"semver"               json:"semver"`
-	Version   uint64        `bson:"version,omitempty"    json:"version"`
+	Version   uint64        `bson:"version,omitempty"    json:"-"`
 	BuildInfo *BuildInfo    `bson:"build_info,omitempty" json:"build_info"`
 	Changelog string        `bson:"changelog,omitempty"  json:"changelog"`
 	Checksum  Checksum      `bson:"checksum,omitempty"   json:"checksum"`
