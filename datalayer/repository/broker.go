@@ -11,6 +11,7 @@ import (
 
 type Broker interface {
 	Repository[bson.ObjectID, model.Broker, model.Brokers]
+	GetBySecret(ctx context.Context, secret string) (*model.Broker, error)
 }
 
 func NewBroker(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) Broker {
@@ -24,6 +25,11 @@ func NewBroker(db *mongo.Database, opts ...options.Lister[options.CollectionOpti
 
 type brokerRepo struct {
 	Repository[bson.ObjectID, model.Broker, model.Brokers]
+}
+
+func (r *brokerRepo) GetBySecret(ctx context.Context, secret string) (*model.Broker, error) {
+	filter := bson.D{{"secret", secret}}
+	return r.FindOne(ctx, filter)
 }
 
 func (r *brokerRepo) CreateIndex(ctx context.Context) error {
