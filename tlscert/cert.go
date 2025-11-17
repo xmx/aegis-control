@@ -121,6 +121,10 @@ func (cp *certPool) selfSigned() (*tls.Certificate, error) {
 		return self, nil
 	}
 
+	serialNumber, err := rand.Int(rand.Reader, big.NewInt(1<<62))
+	if err != nil {
+		return nil, err
+	}
 	priv, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 	if err != nil {
 		return nil, err
@@ -129,7 +133,7 @@ func (cp *certPool) selfSigned() (*tls.Certificate, error) {
 	now := time.Now()
 	template := &x509.Certificate{
 		IsCA:                  true,
-		SerialNumber:          big.NewInt(1),
+		SerialNumber:          serialNumber,
 		Subject:               pkix.Name{CommonName: "aegis", Organization: []string{"aegis"}},
 		NotBefore:             now.AddDate(0, 0, -1),
 		NotAfter:              now.AddDate(1, 0, 0),
