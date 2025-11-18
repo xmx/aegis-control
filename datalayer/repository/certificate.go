@@ -55,7 +55,8 @@ func (r *certificateRepo) CreateIndex(ctx context.Context) error {
 			Options: options.Index().SetUnique(true),
 		},
 		{
-			Keys: bson.D{{Key: "name", Value: 1}},
+			Keys:    bson.D{{Key: "name", Value: 1}},
+			Options: options.Index().SetUnique(true),
 		},
 	}
 	_, err := r.Indexes().CreateMany(ctx, idx)
