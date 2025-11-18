@@ -18,8 +18,8 @@ type SettingData struct {
 }
 
 type ExposeAddress struct {
-	Name string `json:"name" bson:"name"`
-	Addr string `json:"addr" bson:"addr"`
+	Name string `json:"name" bson:"name" validate:"required"`
+	Addr string `json:"addr" bson:"addr" validate:"required"`
 }
 
 type ExposeAddresses []*ExposeAddress
