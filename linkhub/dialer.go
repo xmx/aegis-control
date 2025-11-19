@@ -5,13 +5,13 @@ import (
 	"net"
 	"strings"
 
-	"github.com/xmx/aegis-common/tunnel/tunutil"
+	"github.com/xmx/aegis-common/tunnel/tundial"
 )
 
-func NewSuffixDialer(hub Huber, suffix string) tunutil.DialMatcher {
+func NewSuffixDialer(suffix string, hub Huber) tundial.ContextDialer {
 	return &suffixDialer{
-		suffix: suffix,
 		huber:  hub,
+		suffix: suffix,
 	}
 }
 
@@ -20,38 +20,29 @@ type suffixDialer struct {
 	huber  Huber
 }
 
-func (sd *suffixDialer) MatchDialer(_, address string) tunutil.Dialer {
-	host, _, err := net.SplitHostPort(address)
-	if err != nil {
-		return nil
-	}
-
-	if strings.HasSuffix(host, sd.suffix) {
-		return sd
-	}
-
-	return nil
+func (sd *suffixDialer) Dial(network, address string) (net.Conn, error) {
+	return sd.DialContext(context.Background(), network, address)
 }
 
-func (sd *suffixDialer) DialContext(ctx context.Context, _, address string) (net.Conn, error) {
-	host, _, err := net.SplitHostPort(address)
-	if err != nil {
-		return nil, err
+func (sd *suffixDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	host, _, _ := net.SplitHostPort(address)
+	if host == "" {
+		return nil, nil
 	}
-
 	id, found := strings.CutSuffix(host, sd.suffix)
 	if !found {
-		return nil, &net.AddrError{
-			Addr: address,
-		}
+		return nil, nil
 	}
 
-	mux := sd.huber.Get(id)
-	if mux == nil {
-		return nil, &net.AddrError{
-			Addr: address,
-		}
+	if peer := sd.huber.Get(id); peer != nil {
+		mux := peer.Muxer()
+		return mux.Open(ctx)
 	}
 
-	return mux.Muxer().Open(ctx)
+	return nil, &net.OpError{
+		Op:   "dial",
+		Net:  network,
+		Addr: &net.UnixAddr{Net: network, Name: address},
+		Err:  net.UnknownNetworkError("no route to host"),
+	}
 }
