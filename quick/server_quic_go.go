@@ -85,7 +85,7 @@ func (q *QUICGo) ListenAndServe(ctx context.Context) error {
 }
 
 func (q *QUICGo) handle(parent context.Context, conn *quic.Conn) {
-	mux := tundial.NewQUIC(parent, conn)
+	mux := tundial.NewQUICGo(parent, conn)
 	if h := q.Handler; h != nil {
 		h.Handle(mux)
 	}

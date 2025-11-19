@@ -8,7 +8,7 @@ import (
 
 type Setting struct {
 	ID        bson.ObjectID   `json:"-"                   bson:"_id,omitempty"`
-	Exposes   ExposeAddresses `json:"exposes"             bson:"exposes"`              // 服务暴露地址
+	Exposes   ExposeAddresses `json:"exposes,omitzero"    bson:"exposes"`              // 服务暴露地址
 	UpdatedAt time.Time       `json:"updated_at,omitzero" bson:"updated_at,omitempty"` // 数据更新时间
 	CreatedAt time.Time       `json:"created_at,omitzero" bson:"created_at,omitempty"` // 数据创建时间
 }
