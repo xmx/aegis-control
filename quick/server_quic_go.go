@@ -11,8 +11,8 @@ import (
 
 	"github.com/quic-go/quic-go"
 	"github.com/xmx/aegis-common/library/timex"
-	"github.com/xmx/aegis-common/tunnel/tundial"
-	"github.com/xmx/aegis-common/tunnel/tunutil"
+	"github.com/xmx/aegis-common/tunnel/tunconst"
+	"github.com/xmx/aegis-common/tunnel/tunopen"
 )
 
 type Server interface {
@@ -22,7 +22,7 @@ type Server interface {
 
 type QUICGo struct {
 	Addr       string
-	Handler    tunutil.Handler
+	Handler    tunconst.Handler
 	TLSConfig  *tls.Config
 	QUICConfig *quic.Config
 	mutex      sync.Mutex
@@ -85,7 +85,7 @@ func (q *QUICGo) ListenAndServe(ctx context.Context) error {
 }
 
 func (q *QUICGo) handle(parent context.Context, conn *quic.Conn) {
-	mux := tundial.NewQUICGo(parent, conn)
+	mux := tunopen.NewQUICGo(parent, conn)
 	if h := q.Handler; h != nil {
 		h.Handle(mux)
 	}

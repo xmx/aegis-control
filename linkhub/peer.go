@@ -1,7 +1,7 @@
 package linkhub
 
 import (
-	"github.com/xmx/aegis-common/tunnel/tundial"
+	"github.com/xmx/aegis-common/tunnel/tunopen"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -10,12 +10,12 @@ type Peer interface {
 	ID() bson.ObjectID
 
 	// Muxer 底层通道。
-	Muxer() tundial.Muxer
+	Muxer() tunopen.Muxer
 }
 
 type Peers []Peer
 
-func NewPeer(id bson.ObjectID, mux tundial.Muxer) Peer {
+func NewPeer(id bson.ObjectID, mux tunopen.Muxer) Peer {
 	return &muxerPeer{
 		id:  id,
 		mux: mux,
@@ -24,13 +24,13 @@ func NewPeer(id bson.ObjectID, mux tundial.Muxer) Peer {
 
 type muxerPeer struct {
 	id  bson.ObjectID
-	mux tundial.Muxer
+	mux tunopen.Muxer
 }
 
 func (p *muxerPeer) ID() bson.ObjectID {
 	return p.id
 }
 
-func (p *muxerPeer) Muxer() tundial.Muxer {
+func (p *muxerPeer) Muxer() tunopen.Muxer {
 	return p.mux
 }

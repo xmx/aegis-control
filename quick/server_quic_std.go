@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/xmx/aegis-common/library/timex"
-	"github.com/xmx/aegis-common/tunnel/tundial"
-	"github.com/xmx/aegis-common/tunnel/tunutil"
+	"github.com/xmx/aegis-common/tunnel/tunconst"
+	"github.com/xmx/aegis-common/tunnel/tunopen"
 	"golang.org/x/net/quic"
 )
 
 type QUICStd struct {
 	Addr       string
-	Handler    tunutil.Handler
+	Handler    tunconst.Handler
 	QUICConfig *quic.Config
 	mutex      sync.Mutex
 	endpoints  map[*quic.Endpoint]struct{}
@@ -83,7 +83,7 @@ func (q *QUICStd) ListenAndServe(ctx context.Context) error {
 }
 
 func (q *QUICStd) handle(parent context.Context, conn *quic.Conn) {
-	mux := tundial.NewStdQUIC(parent, nil, conn)
+	mux := tunopen.NewQUIC(parent, nil, conn)
 	if h := q.Handler; h != nil {
 		h.Handle(mux)
 	}
