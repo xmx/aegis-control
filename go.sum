@@ -26,6 +26,8 @@ github.com/xmx/aegis-common v0.0.0-20251119094815-1a396c0ff80b h1:kjQcPkX7RwaGsU
 github.com/xmx/aegis-common v0.0.0-20251119094815-1a396c0ff80b/go.mod h1:2clwVSLv9y0Vvs19+JrNrVMYckZtWBfGRO7RdmIS/b8=
 github.com/xmx/aegis-common v0.0.0-20251119105017-e0fe79d57f46 h1:1xlGxCGOnx8GXFd563KzOxJAcq1uHKrdHBHgonauOs0=
 github.com/xmx/aegis-common v0.0.0-20251119105017-e0fe79d57f46/go.mod h1:2clwVSLv9y0Vvs19+JrNrVMYckZtWBfGRO7RdmIS/b8=
+github.com/xmx/aegis-common v0.0.0-20251120054206-e90bbac3dfb6 h1:Jy5Yh4R/PMaTl8JnmLSN1Ql1SfbmsIL0mBx78t4TpVI=
+github.com/xmx/aegis-common v0.0.0-20251120054206-e90bbac3dfb6/go.mod h1:8rId3x8Eri7aQypMjF1OqJfmMH80otwP0ZGBPO7Uuiw=
 github.com/xtaci/smux v1.5.39 h1:cXfF+86x9HA9p7pCccAnemqmFwy/Y/jjZY10P6RYQB4=
 github.com/xtaci/smux v1.5.39/go.mod h1:OMlQbT5vcgl2gb49mFkYo6SMf+zP3rcjcwQz7ZU7IGY=
 github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 h1:ilQV1hzziu+LLM3zUTJ0trRztfwgjqKnBWNtSRkbmwM=
@@ -39,6 +41,8 @@ golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACk
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.44.0 h1:A97SsFvM3AIwEEmTBiaxPPTYpDC47w720rdiiUvgoAU=
 golang.org/x/crypto v0.44.0/go.mod h1:013i+Nw79BMiQiMsOPcVCB5ZIJbYkerPrGnOa00tvmc=
+golang.org/x/crypto v0.45.0 h1:jMBrvKuj23MTlT0bQEOBcAE0mjg8mK9RXFhRH6nyF3Q=
+golang.org/x/crypto v0.45.0/go.mod h1:XTGrrkGJve7CYK7J8PEww4aY7gM3qMCElcJQ8n8JdX4=
 golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4/go.mod h1:jJ57K6gSWd91VN4djpZkiMVwK6gcyfeH4XE8wZrZaV4=
 golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/net v0.0.0-20210226172049-e18ecbb05110/go.mod h1:m0MpNAwzfU5UDzcl9v0D8zg8gWTRqZa9RBIspLL5mdg=
