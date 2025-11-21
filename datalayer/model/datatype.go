@@ -1,6 +1,8 @@
 package model
 
 import (
+	"net/http"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -33,4 +35,16 @@ func (d Duration) MarshalText() ([]byte, error) {
 func (d Duration) String() string {
 	du := time.Duration(d)
 	return du.String()
+}
+
+type HTTPHeader map[string]string
+
+func (h HTTPHeader) Canonical() HTTPHeader {
+	hm := make(HTTPHeader, len(h))
+	for k, v := range h {
+		key := http.CanonicalHeaderKey(strings.TrimSpace(k))
+		hm[key] = v
+	}
+
+	return hm
 }
