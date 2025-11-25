@@ -11,6 +11,7 @@ import (
 
 type VictoriaMetrics interface {
 	Repository[bson.ObjectID, model.VictoriaMetrics, []*model.VictoriaMetrics]
+	Enabled(ctx context.Context) (*model.VictoriaMetrics, error)
 }
 
 func NewVictoriaMetrics(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) VictoriaMetrics {
@@ -36,4 +37,9 @@ func (r *victoriaMetricsRepo) CreateIndex(ctx context.Context) error {
 	_, err := r.Indexes().CreateMany(ctx, idx)
 
 	return err
+}
+
+func (r *victoriaMetricsRepo) Enabled(ctx context.Context) (*model.VictoriaMetrics, error) {
+	filter := bson.D{{"enabled", true}}
+	return r.FindOne(ctx, filter)
 }
