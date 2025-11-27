@@ -11,26 +11,34 @@ type Peer interface {
 
 	// Muxer 底层通道。
 	Muxer() tunopen.Muxer
+
+	// Info is node info.
+	Info() Info
 }
 
 type Peers []Peer
 
-func NewPeer(id bson.ObjectID, mux tunopen.Muxer) Peer {
+func NewPeer(id bson.ObjectID, mux tunopen.Muxer, info Info) Peer {
 	return &muxerPeer{
-		id:  id,
-		mux: mux,
+		id:   id,
+		mux:  mux,
+		info: info,
 	}
 }
 
 type muxerPeer struct {
-	id  bson.ObjectID
-	mux tunopen.Muxer
+	id   bson.ObjectID
+	mux  tunopen.Muxer
+	info Info
 }
 
-func (p *muxerPeer) ID() bson.ObjectID {
-	return p.id
-}
+func (p *muxerPeer) ID() bson.ObjectID    { return p.id }
+func (p *muxerPeer) Muxer() tunopen.Muxer { return p.mux }
+func (p *muxerPeer) Info() Info           { return p.info }
 
-func (p *muxerPeer) Muxer() tunopen.Muxer {
-	return p.mux
+type Info struct {
+	Inet     string
+	Goos     string
+	Goarch   string
+	Hostname string
 }
