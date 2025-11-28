@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -21,6 +22,15 @@ type Firewall struct {
 type FirewallRegion struct {
 	Country string   `bson:"country" json:"country" validate:"required,lte=100"`                      // 国家/地区
 	Cities  []string `bson:"cities"  json:"cities"  validate:"lte=1000,unique,dive,required,lte=500"` // 城市
+}
+
+func (f FirewallRegion) String() string {
+	cities := strings.Join(f.Cities, ", ")
+	if cities == "" {
+		return f.Country
+	}
+
+	return f.Country + ": (" + cities + ")"
 }
 
 type FirewallRegions []*FirewallRegion
