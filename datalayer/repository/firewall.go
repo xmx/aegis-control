@@ -11,6 +11,7 @@ import (
 
 type Firewall interface {
 	Repository[bson.ObjectID, model.Firewall, []*model.Firewall]
+	Enabled(ctx context.Context) (*model.Firewall, error)
 }
 
 func NewFirewall(db *mongo.Database, opts ...options.Lister[options.CollectionOptions]) Firewall {
@@ -24,6 +25,10 @@ func NewFirewall(db *mongo.Database, opts ...options.Lister[options.CollectionOp
 
 type firewallRepo struct {
 	Repository[bson.ObjectID, model.Firewall, []*model.Firewall]
+}
+
+func (r *firewallRepo) Enabled(ctx context.Context) (*model.Firewall, error) {
+	return r.FindOne(ctx, bson.D{{"enabled", true}})
 }
 
 func (r *firewallRepo) CreateIndex(ctx context.Context) error {
