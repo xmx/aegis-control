@@ -19,6 +19,7 @@ type All interface {
 	Certificate() Certificate
 	Firewall() Firewall
 	FS() FS
+	Maxmind() Maxmind
 	Setting() Setting
 	VictoriaMetrics() VictoriaMetrics
 
@@ -36,6 +37,7 @@ func NewAll(db *mongo.Database, log *slog.Logger) All {
 		certificate:     NewCertificate(db),
 		firewall:        NewFirewall(db),
 		fs:              NewFS(db),
+		maxmind:         NewMaxmind(db),
 		setting:         NewSetting(db),
 		victoriaMetrics: NewVictoriaMetrics(db),
 	}
@@ -52,6 +54,7 @@ type allRepo struct {
 	certificate     Certificate
 	firewall        Firewall
 	fs              FS
+	maxmind         Maxmind
 	setting         Setting
 	victoriaMetrics VictoriaMetrics
 }
@@ -66,6 +69,7 @@ func (ar *allRepo) BrokerRelease() BrokerRelease     { return ar.brokerRelease }
 func (ar *allRepo) Certificate() Certificate         { return ar.certificate }
 func (ar *allRepo) Firewall() Firewall               { return ar.firewall }
 func (ar *allRepo) FS() FS                           { return ar.fs }
+func (ar *allRepo) Maxmind() Maxmind                 { return ar.maxmind }
 func (ar *allRepo) Setting() Setting                 { return ar.setting }
 func (ar *allRepo) VictoriaMetrics() VictoriaMetrics { return ar.victoriaMetrics }
 
