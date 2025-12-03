@@ -11,7 +11,7 @@ import (
 // 防火墙可以切换 黑/白名单模式，只能生效一种模式。
 // 分为 IP 模式/国家（地区）模式，只能选择一种模式。
 type Firewall struct {
-	ID           bson.ObjectID `bson:"_id,omitempty"        json:"id"`                     // ID
+	ID           bson.ObjectID `bson:"_id,omitempty"        json:"-"`                      // ID
 	Name         string        `bson:"name,omitempty"       json:"name"`                   // 规则名
 	Enabled      bool          `bson:"enabled"              json:"enabled"`                // 是否启用该规则（同时最多只能有一条规则生效）
 	TrustHeaders []string      `bson:"trust_headers"        json:"trust_headers,omitzero"` // 获取 IP 的可信 Headers（有反代的场景）
