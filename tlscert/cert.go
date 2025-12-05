@@ -23,16 +23,20 @@ type Certifier interface {
 	Reset()
 }
 
-func NewCertPool(slow func(context.Context) ([]*tls.Certificate, error), log *slog.Logger) Certifier {
+type LoadFunc func(context.Context) ([]*tls.Certificate, error)
+
+func NewCertPool(load LoadFunc, gen bool, log *slog.Logger) Certifier {
 	return &certPool{
-		slow: slow,
+		load: load,
+		gen:  gen,
 		log:  log,
 	}
 }
 
 type certPool struct {
-	slow  func(context.Context) ([]*tls.Certificate, error) // 惰性加载函数。
-	log   *slog.Logger                                      // 日志输出
+	load  LoadFunc     // 惰性加载函数。
+	gen   bool         // 是否使用自签证书兜底
+	log   *slog.Logger // 日志输出
 	mutex sync.Mutex
 	cert  atomic.Pointer[certMap]
 	self  atomic.Pointer[tls.Certificate] // 自签证书，兜底用。
@@ -51,9 +55,15 @@ func (cp *certPool) Match(chi *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	if crt, err := crtm.Match(sni); crt != nil {
 		cp.log.Debug("证书池中匹配到了合适的证书", attrs...)
 		return crt, nil
+	} else if err != nil {
+		attrs = append(attrs, "match_error", err)
+	}
+
+	if cp.gen {
+		cp.log.Debug("证书池中未匹配到合适的证书，准备使用自签证书", attrs...)
 	} else {
-		args := append(attrs, "error", err)
-		cp.log.Debug("证书池中未匹配到合适的证书，准备使用自签证书", args...)
+		cp.log.Info("未匹配到证书且禁用了自签证书", attrs...)
+		return nil, nil
 	}
 
 	// 如果没有拿到合适的证书，就返回自签证书。
@@ -94,7 +104,7 @@ func (cp *certPool) slowLoad() *certMap {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	pairs, err := cp.slow(ctx)
+	pairs, err := cp.load(ctx)
 	if err != nil {
 		crtm.err = err
 		// 可能是网络波动导致的超时问题，不放入结果缓存。
