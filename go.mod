@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/quic-go/quic-go v0.58.0
-	github.com/xmx/aegis-common v0.0.0-20251222060433-c8695146ba6d
+	github.com/xmx/aegis-common v0.0.0-20251229104214-35cf324cab33
 	github.com/xmx/metrics v0.0.0-20251124113446-33b980340aea
 	go.mongodb.org/mongo-driver/v2 v2.4.1
 	golang.org/x/net v0.48.0
@@ -19,7 +19,7 @@ require (
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.2.0 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
-	github.com/xtaci/smux v1.5.49 // indirect
+	github.com/xtaci/smux v1.5.50 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
