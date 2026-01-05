@@ -1,6 +1,6 @@
 module github.com/xmx/aegis-control
 
-go 1.26rc1
+go 1.25.5
 
 require (
 	github.com/quic-go/quic-go v0.58.0
