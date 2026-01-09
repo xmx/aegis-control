@@ -96,12 +96,3 @@ func (sm *safeMap) snapshot() []Peer {
 
 	return peers
 }
-
-type Huber1 interface {
-	Put(p Peer) (succeed bool)
-	GetByID(id bson.ObjectID) Peer
-	GetByHost(host string) Peer
-	DelByID(id bson.ObjectID) Peer
-	DelByHost(host string) Peer
-	Peers() Peers
-}

@@ -1,6 +1,8 @@
 package linkhub
 
 import (
+	"time"
+
 	"github.com/xmx/aegis-common/muxlink/muxconn"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -43,4 +45,17 @@ type Info struct {
 	Goarch   string `json:"goarch"`
 	Hostname string `json:"hostname"`
 	Semver   string `json:"semver"`
+}
+
+// ConnectListener 节点上下线通知接口。
+type ConnectListener interface {
+	// OnConnection 节点上线事件通知。
+	//
+	// 该方法为同步阻塞方法。
+	OnConnection(now time.Time, peer Peer)
+
+	// OnDisconnection 节点下线事件通知。
+	//
+	// 该方法为同步阻塞方法。
+	OnDisconnection(now time.Time, info Info)
 }
