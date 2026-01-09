@@ -26,6 +26,7 @@ type TunnelStat struct {
 }
 
 type ExecuteStat struct {
+	Inet       string   `json:"inet,omitzero"       bson:"inet,omitempty"`
 	Goos       string   `json:"goos,omitzero"       bson:"goos,omitempty"`
 	Goarch     string   `json:"goarch,omitzero"     bson:"goarch,omitempty"`
 	PID        int      `json:"pid,omitzero"        bson:"pid,omitempty"`
@@ -33,5 +34,4 @@ type ExecuteStat struct {
 	Hostname   string   `json:"hostname,omitzero"   bson:"hostname,omitempty"`
 	Workdir    string   `json:"workdir,omitzero"    bson:"workdir,omitempty"`
 	Executable string   `json:"executable,omitzero" bson:"executable,omitempty"`
-	Username   string   `json:"username,omitzero"   bson:"username,omitempty"`
 }

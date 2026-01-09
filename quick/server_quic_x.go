@@ -8,20 +8,20 @@ import (
 	"time"
 
 	"github.com/xmx/aegis-common/library/timex"
-	"github.com/xmx/aegis-common/tunnel/tunconst"
-	"github.com/xmx/aegis-common/tunnel/tunopen"
+	"github.com/xmx/aegis-common/muxlink/muxconn"
+	"github.com/xmx/aegis-common/muxlink/muxproto"
 	"golang.org/x/net/quic"
 )
 
-type QUICStd struct {
+type QUICx struct {
 	Addr       string
-	Handler    tunconst.Handler
+	Accept     muxproto.MUXAccepter
 	QUICConfig *quic.Config
 	mutex      sync.Mutex
 	endpoints  map[*quic.Endpoint]struct{}
 }
 
-func (q *QUICStd) Close() error {
+func (q *QUICx) Close() error {
 	q.mutex.Lock()
 	defer q.mutex.Unlock()
 
@@ -36,7 +36,7 @@ func (q *QUICStd) Close() error {
 	return errors.Join(errs...)
 }
 
-func (q *QUICStd) ListenAndServe(ctx context.Context) error {
+func (q *QUICx) ListenAndServe(ctx context.Context) error {
 	addr := q.Addr
 	if addr == "" {
 		addr = ":443"
@@ -82,10 +82,10 @@ func (q *QUICStd) ListenAndServe(ctx context.Context) error {
 	}
 }
 
-func (q *QUICStd) handle(parent context.Context, conn *quic.Conn) {
-	mux := tunopen.NewQUIC(parent, nil, conn)
-	if h := q.Handler; h != nil {
-		h.Handle(mux)
+func (q *QUICx) handle(parent context.Context, conn *quic.Conn) {
+	mux := muxconn.NewQUICx(parent, nil, conn)
+	if acpt := q.Accept; acpt != nil {
+		acpt.AcceptMUX(mux)
 	}
 	_ = mux.Close()
 }

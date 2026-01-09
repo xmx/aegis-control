@@ -11,8 +11,8 @@ import (
 
 	"github.com/quic-go/quic-go"
 	"github.com/xmx/aegis-common/library/timex"
-	"github.com/xmx/aegis-common/tunnel/tunconst"
-	"github.com/xmx/aegis-common/tunnel/tunopen"
+	"github.com/xmx/aegis-common/muxlink/muxconn"
+	"github.com/xmx/aegis-common/muxlink/muxproto"
 )
 
 type Server interface {
@@ -20,16 +20,16 @@ type Server interface {
 	ListenAndServe(ctx context.Context) error
 }
 
-type QUICGo struct {
+type QUICgo struct {
 	Addr       string
-	Handler    tunconst.Handler
+	Handler    muxproto.MUXAccepter
 	TLSConfig  *tls.Config
 	QUICConfig *quic.Config
 	mutex      sync.Mutex
 	listeners  map[*quic.Listener]struct{}
 }
 
-func (q *QUICGo) Close() error {
+func (q *QUICgo) Close() error {
 	q.mutex.Lock()
 	defer q.mutex.Unlock()
 
@@ -42,7 +42,7 @@ func (q *QUICGo) Close() error {
 	return errors.Join(errs...)
 }
 
-func (q *QUICGo) ListenAndServe(ctx context.Context) error {
+func (q *QUICgo) ListenAndServe(ctx context.Context) error {
 	addr := q.Addr
 	if addr == "" {
 		addr = ":443"
@@ -84,10 +84,10 @@ func (q *QUICGo) ListenAndServe(ctx context.Context) error {
 	}
 }
 
-func (q *QUICGo) handle(parent context.Context, conn *quic.Conn) {
-	mux := tunopen.NewQUICGo(parent, conn)
+func (q *QUICgo) handle(parent context.Context, conn *quic.Conn) {
+	mux := muxconn.NewQUICgo(parent, conn)
 	if h := q.Handler; h != nil {
-		h.Handle(mux)
+		h.AcceptMUX(mux)
 	}
 	_ = mux.Close()
 }

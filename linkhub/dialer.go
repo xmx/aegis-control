@@ -5,10 +5,10 @@ import (
 	"net"
 	"strings"
 
-	"github.com/xmx/aegis-common/tunnel/tundial"
+	"github.com/xmx/aegis-common/muxlink/muxproto"
 )
 
-func NewSuffixDialer(suffix string, hub Huber) tundial.ContextDialer {
+func NewSuffixDialer(suffix string, hub Huber) muxproto.Dialer {
 	return &suffixDialer{
 		huber:  hub,
 		suffix: suffix,
