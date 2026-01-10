@@ -52,10 +52,10 @@ type ConnectListener interface {
 	// OnConnection 节点上线事件通知。
 	//
 	// 该方法为同步阻塞方法。
-	OnConnection(now time.Time, peer Peer)
+	OnConnection(peer Peer, connectAt time.Time)
 
 	// OnDisconnection 节点下线事件通知。
 	//
 	// 该方法为同步阻塞方法。
-	OnDisconnection(now time.Time, info Info)
+	OnDisconnection(info Info, connectAt, disconnectAt time.Time)
 }
