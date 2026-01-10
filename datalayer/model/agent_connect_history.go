@@ -18,14 +18,15 @@ type AgentConnectHistory struct {
 }
 
 type TunnelStatHistory struct {
-	ConnectedAt    time.Time `json:"connected_at,omitzero"    bson:"connected_at,omitempty"`
-	DisconnectedAt time.Time `json:"disconnected_at,omitzero" bson:"disconnected_at,omitempty"`
-	Protocol       string    `json:"protocol,omitzero"        bson:"protocol,omitempty"`
-	Subprotocol    string    `json:"subprotocol,omitzero"     bson:"subprotocol,omitempty"`
-	LocalAddr      string    `json:"local_addr,omitzero"      bson:"local_addr,omitempty"`
-	RemoteAddr     string    `json:"remote_addr,omitzero"     bson:"remote_addr,omitempty"`
-	ReceiveBytes   uint64    `json:"receive_bytes,omitzero"   bson:"receive_bytes,omitempty"`  // broker/agent 为主体
-	TransmitBytes  uint64    `json:"transmit_bytes,omitzero"  bson:"transmit_bytes,omitempty"` // broker/agent 为主体
+	ConnectedAt    time.Time     `json:"connected_at,omitzero"    bson:"connected_at,omitempty"`
+	DisconnectedAt time.Time     `json:"disconnected_at,omitzero" bson:"disconnected_at,omitempty"`
+	Duration       time.Duration `json:"duration"                 bson:"duration"`
+	Protocol       string        `json:"protocol,omitzero"        bson:"protocol,omitempty"`
+	Subprotocol    string        `json:"subprotocol,omitzero"     bson:"subprotocol,omitempty"`
+	LocalAddr      string        `json:"local_addr,omitzero"      bson:"local_addr,omitempty"`
+	RemoteAddr     string        `json:"remote_addr,omitzero"     bson:"remote_addr,omitempty"`
+	ReceiveBytes   uint64        `json:"receive_bytes,omitzero"   bson:"receive_bytes,omitempty"`  // broker/agent 为主体
+	TransmitBytes  uint64        `json:"transmit_bytes,omitzero"  bson:"transmit_bytes,omitempty"` // broker/agent 为主体
 }
 
 type AgentConnectHistories []*AgentConnectHistory
