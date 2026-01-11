@@ -29,6 +29,7 @@ type ExecuteStat struct {
 	Inet       string   `json:"inet,omitzero"       bson:"inet,omitempty"`
 	Goos       string   `json:"goos,omitzero"       bson:"goos,omitempty"`
 	Goarch     string   `json:"goarch,omitzero"     bson:"goarch,omitempty"`
+	Semver     string   `json:"semver,omitzero"     bson:"semver,omitempty"`
 	PID        int      `json:"pid,omitzero"        bson:"pid,omitempty"`
 	Args       []string `json:"args,omitzero"       bson:"args,omitempty"`
 	Hostname   string   `json:"hostname,omitzero"   bson:"hostname,omitempty"`
