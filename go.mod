@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/quic-go/quic-go v0.59.0
-	github.com/xmx/aegis-common v0.0.0-20260113005926-66306a7ea638
+	github.com/xmx/aegis-common v0.0.0-20260113114909-6a181fb8bf43
 	github.com/xmx/metrics v0.0.0-20251124113446-33b980340aea
 	go.mongodb.org/mongo-driver/v2 v2.4.1
 	golang.org/x/net v0.49.0
