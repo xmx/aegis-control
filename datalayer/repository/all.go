@@ -22,6 +22,7 @@ type All interface {
 	Firewall() Firewall
 	FS() FS
 	Maxmind() Maxmind
+	Pyroscope() Pyroscope
 	Setting() Setting
 	VictoriaMetrics() VictoriaMetrics
 
@@ -42,6 +43,7 @@ func NewAll(db *mongo.Database, log *slog.Logger) All {
 		firewall:             NewFirewall(db),
 		fs:                   NewFS(db),
 		maxmind:              NewMaxmind(db),
+		pyroscope:            NewPyroscope(db),
 		setting:              NewSetting(db),
 		victoriaMetrics:      NewVictoriaMetrics(db),
 	}
@@ -61,6 +63,7 @@ type allRepo struct {
 	firewall             Firewall
 	fs                   FS
 	maxmind              Maxmind
+	pyroscope            Pyroscope
 	setting              Setting
 	victoriaMetrics      VictoriaMetrics
 }
@@ -79,6 +82,7 @@ func (ar *allRepo) Firewall() Firewall                         { return ar.firew
 func (ar *allRepo) FS() FS                                     { return ar.fs }
 func (ar *allRepo) Maxmind() Maxmind                           { return ar.maxmind }
 func (ar *allRepo) Setting() Setting                           { return ar.setting }
+func (ar *allRepo) Pyroscope() Pyroscope                       { return ar.pyroscope }
 func (ar *allRepo) VictoriaMetrics() VictoriaMetrics           { return ar.victoriaMetrics }
 
 func (ar *allRepo) CreateIndex(ctx context.Context) error {

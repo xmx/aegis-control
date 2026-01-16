@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/quic-go/quic-go v0.59.0
-	github.com/xmx/aegis-common v0.0.0-20260116032112-938ff6400e47
+	github.com/xmx/aegis-common v0.0.0-20260116092210-d4bc99cc2fe6
 	github.com/xmx/metrics v0.0.0-20260116025626-8ee725bd7622
 	go.mongodb.org/mongo-driver/v2 v2.4.1
 	golang.org/x/net v0.49.0
@@ -13,7 +13,7 @@ require (
 require (
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/klauspost/compress v1.18.2 // indirect
+	github.com/klauspost/compress v1.18.3 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/valyala/histogram v1.2.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
