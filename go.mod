@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/quic-go/quic-go v0.59.0
-	github.com/xmx/aegis-common v0.0.0-20260118023250-53b9b43c7553
+	github.com/xmx/aegis-common v0.0.0-20260119060111-f532dbb5d947
 	github.com/xmx/metrics v0.0.0-20260116025626-8ee725bd7622
 	go.mongodb.org/mongo-driver/v2 v2.4.1
 	golang.org/x/net v0.49.0
@@ -26,4 +26,5 @@ require (
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/time v0.14.0 // indirect
 )
