@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/quic-go/quic-go"
-	"github.com/xmx/aegis-common/library/timex"
 	"github.com/xmx/aegis-common/muxlink/muxconn"
 	"github.com/xmx/aegis-common/muxlink/muxproto"
 )
@@ -75,7 +74,7 @@ func (q *QUICgo) ListenAndServe(ctx context.Context) error {
 					tempDelay *= 2
 				}
 				tempDelay = min(tempDelay, time.Second)
-				_ = timex.Sleep(ctx, tempDelay)
+				_ = timeSleep(ctx, tempDelay)
 				continue
 			}
 		}

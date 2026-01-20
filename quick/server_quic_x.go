@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/xmx/aegis-common/library/timex"
 	"github.com/xmx/aegis-common/muxlink/muxconn"
 	"github.com/xmx/aegis-common/muxlink/muxproto"
 	"golang.org/x/net/quic"
@@ -73,7 +72,7 @@ func (q *QUICx) ListenAndServe(ctx context.Context) error {
 					tempDelay *= 2
 				}
 				tempDelay = min(tempDelay, time.Second)
-				_ = timex.Sleep(ctx, tempDelay)
+				_ = timeSleep(ctx, tempDelay)
 				continue
 			}
 		}
@@ -88,4 +87,16 @@ func (q *QUICx) handle(parent context.Context, conn *quic.Conn) {
 		acpt.AcceptMUX(mux)
 	}
 	_ = mux.Close()
+}
+
+func timeSleep(ctx context.Context, d time.Duration) error {
+	timer := time.NewTimer(d)
+	defer timer.Stop()
+
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return nil
+	}
 }
