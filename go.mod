@@ -1,10 +1,10 @@
 module github.com/xmx/aegis-control
 
-go 1.25.5
+go 1.25.6
 
 require (
 	github.com/quic-go/quic-go v0.59.0
-	github.com/xmx/aegis-common v0.0.0-20260120055946-2d1464628480
+	github.com/xmx/aegis-common v0.0.0-20260120061441-f6264d7b4a21
 	github.com/xmx/metrics v0.0.0-20260116025626-8ee725bd7622
 	go.mongodb.org/mongo-driver/v2 v2.4.1
 	golang.org/x/net v0.49.0
