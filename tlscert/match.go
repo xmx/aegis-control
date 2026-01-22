@@ -18,117 +18,140 @@ import (
 	"time"
 )
 
-type Certifier interface {
-	Match(*tls.ClientHelloInfo) (*tls.Certificate, error)
+type LoadFunc func(context.Context) ([]*tls.Certificate, error)
+
+type Matcher interface {
+	GetCertificate(ch *tls.ClientHelloInfo) (*tls.Certificate, error)
+
+	// SelfSigned 获取自签证书状态。
+	SelfSigned() (enable bool)
+
+	// SetSelfSigned 设置自签证书开关状态。
+	SetSelfSigned(enable bool)
+
 	Reset()
 }
 
-type LoadFunc func(context.Context) ([]*tls.Certificate, error)
-
-func NewCertPool(load LoadFunc, gen bool, log *slog.Logger) Certifier {
-	return &certPool{
+func NewMatch(load LoadFunc, log *slog.Logger) Matcher {
+	return &certificateMatcher{
 		load: load,
-		gen:  gen,
 		log:  log,
 	}
 }
 
-type certPool struct {
-	load  LoadFunc     // 惰性加载函数。
-	gen   bool         // 是否使用自签证书兜底
-	log   *slog.Logger // 日志输出
-	mutex sync.Mutex
-	cert  atomic.Pointer[certMap]
-	self  atomic.Pointer[tls.Certificate] // 自签证书，兜底用。
+type certificateMatcher struct {
+	load        LoadFunc
+	log         *slog.Logger
+	mutex       sync.Mutex
+	disableSelf bool                            // 是否禁用自签名证书
+	pool        atomic.Pointer[certificatePool] // 证书池
+	self        atomic.Pointer[tls.Certificate] // 自签证书
 }
 
-func (cp *certPool) Match(chi *tls.ClientHelloInfo) (*tls.Certificate, error) {
-	sni := chi.ServerName
+func (m *certificateMatcher) GetCertificate(ch *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	sni := ch.ServerName
 	attrs := []any{"sni", sni}
-	cp.log.Debug("开始匹配合适的证书", attrs...)
+	m.log.Debug("开始匹配的证书", attrs...)
 
-	crtm := cp.cert.Load()
-	if crtm == nil {
-		cp.log.Debug("懒加载证书池", attrs...)
-		crtm = cp.slowLoad()
+	pool := m.pool.Load()
+	if pool == nil {
+		ctx := ch.Context()
+		m.log.Debug("懒加载证书池", attrs...)
+		pool = m.slowLoadPool(ctx)
 	}
-	if crt, err := crtm.Match(sni); crt != nil {
-		cp.log.Debug("证书池中匹配到了合适的证书", attrs...)
+	if crt, err := pool.Match(sni); crt != nil {
+		m.log.Debug("证书池中匹配到了合适的证书", attrs...)
 		return crt, nil
 	} else if err != nil {
 		attrs = append(attrs, "match_error", err)
-	}
-
-	if cp.gen {
-		cp.log.Debug("证书池中未匹配到合适的证书，准备使用自签证书", attrs...)
+		m.log.Warn("证书池中匹配到了合适的证书出错", attrs...)
 	} else {
-		cp.log.Info("未匹配到证书且禁用了自签证书", attrs...)
-		return nil, nil
+		m.log.Info("证书池中未匹配到了合适的证书", attrs...)
 	}
 
 	// 如果没有拿到合适的证书，就返回自签证书。
-	if self := cp.self.Load(); self != nil {
-		cp.log.Debug("返回自签证书", attrs...)
+	if self := m.self.Load(); self != nil {
+		m.log.Debug("返回已生成的自签证书", attrs...)
 		return self, nil
 	}
 
-	cp.log.Info("准备开始自签证书", attrs...)
-	if crt, err := cp.selfSigned(); crt != nil {
-		cp.log.Debug("生成并返回自签证书", attrs...)
-		return crt, nil
-	} else {
+	m.log.Info("开始自签证书", attrs...)
+	self, err := m.selfSignature()
+	if err != nil {
 		attrs = append(attrs, "error", err)
-		cp.log.Warn("自签证书生成错误", attrs...)
-		return nil, err
+		m.log.Warn("自签证书生成错误", attrs...)
+	} else if self == nil {
+		m.log.Debug("当前禁用了自签证书", attrs...)
+	} else {
+		m.log.Info("自签证书生成完毕", attrs...)
+	}
+
+	return self, err
+}
+
+func (m *certificateMatcher) SelfSigned() bool {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	return !m.disableSelf
+}
+
+func (m *certificateMatcher) SetSelfSigned(enable bool) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	m.disableSelf = !enable
+	if m.disableSelf {
+		m.self.Store(nil)
 	}
 }
 
-func (cp *certPool) Reset() {
-	cp.mutex.Lock()
-	defer cp.mutex.Unlock()
-
-	cp.cert.Store(nil)
-	cp.self.Store(nil)
+func (m *certificateMatcher) Reset() {
+	m.self.Store(nil)
+	m.pool.Store(nil)
 }
 
-func (cp *certPool) slowLoad() *certMap {
-	cp.mutex.Lock()
-	defer cp.mutex.Unlock()
+func (m *certificateMatcher) slowLoadPool(parent context.Context) *certificatePool {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
 
-	if crtm := cp.cert.Load(); crtm != nil {
-		return crtm
+	if pool := m.pool.Load(); pool != nil {
+		return pool
 	}
 
-	crtm := &certMap{certs: make(map[string][]*tls.Certificate, 16)}
+	pool := &certificatePool{certs: make(map[string][]*tls.Certificate, 16)}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(parent, time.Minute)
 	defer cancel()
 
-	pairs, err := cp.load(ctx)
+	pairs, err := m.load(ctx)
 	if err != nil {
-		crtm.err = err
+		pool.err = err
 		// 可能是网络波动导致的超时问题，不放入结果缓存。
 		if te, ok := err.(interface{ Timeout() bool }); !ok || !te.Timeout() {
-			cp.cert.Store(crtm)
+			m.pool.Store(pool)
 		}
 
-		return crtm
+		return pool
 	}
 
 	for _, kp := range pairs {
-		crtm.put(kp)
+		pool.put(kp)
 	}
-	cp.cert.Store(crtm)
+	m.pool.Store(pool)
 
-	return crtm
+	return pool
 }
 
-func (cp *certPool) selfSigned() (*tls.Certificate, error) {
-	cp.mutex.Lock()
-	defer cp.mutex.Unlock()
+func (m *certificateMatcher) selfSignature() (*tls.Certificate, error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
 
-	if self := cp.self.Load(); self != nil {
-		return self, nil
+	if m.disableSelf { // 禁用自签证书
+		return nil, nil
+	}
+	if crt := m.self.Load(); crt != nil {
+		return crt, nil
 	}
 
 	serialNumber, err := rand.Int(rand.Reader, big.NewInt(1<<62))
@@ -169,17 +192,17 @@ func (cp *certPool) selfSigned() (*tls.Certificate, error) {
 	if err != nil {
 		return nil, err
 	}
-	cp.self.Store(&tlsCert)
+	m.self.Store(&tlsCert)
 
 	return &tlsCert, nil
 }
 
-type certMap struct {
+type certificatePool struct {
 	err   error
 	certs map[string][]*tls.Certificate
 }
 
-func (cm *certMap) Match(sni string) (*tls.Certificate, error) {
+func (cm *certificatePool) Match(sni string) (*tls.Certificate, error) {
 	if cm.err != nil || len(cm.certs) == 0 {
 		return nil, cm.err
 	}
@@ -210,7 +233,7 @@ func (cm *certMap) Match(sni string) (*tls.Certificate, error) {
 	return last, nil
 }
 
-func (cm *certMap) put(crt *tls.Certificate) {
+func (cm *certificatePool) put(crt *tls.Certificate) {
 	leaf := crt.Leaf
 	for _, name := range leaf.DNSNames {
 		cm.certs[name] = append(cm.certs[name], crt)

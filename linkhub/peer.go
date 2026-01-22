@@ -1,42 +1,48 @@
 package linkhub
 
 import (
+	"context"
 	"time"
 
 	"github.com/xmx/aegis-common/muxlink/muxconn"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+type ConfigLoader[T any] interface {
+	LoadConfig(ctx context.Context) (*T, error)
+}
+
+type ServerHooker interface {
+	OnConnected(inf Info, connectAt time.Time)
+
+	OnDisconnected(inf Info, connectAt, disconnectAt time.Time)
+}
+
 type Peer interface {
 	// ID 节点数据库 ID。
 	ID() bson.ObjectID
 
+	// Host 主机名。
+	Host() string
+
 	// Muxer 底层通道。
 	Muxer() muxconn.Muxer
 
-	// Info is node info.
+	// Info 节点信息。
 	Info() Info
 }
 
-type Peers []Peer
-
-func NewPeer(id bson.ObjectID, mux muxconn.Muxer, info Info) Peer {
-	return &muxerPeer{
-		id:   id,
-		mux:  mux,
-		info: info,
-	}
-}
-
-type muxerPeer struct {
+type muxPeer struct {
 	id   bson.ObjectID
 	mux  muxconn.Muxer
-	info Info
+	inf  Info
+	host string
 }
 
-func (p *muxerPeer) ID() bson.ObjectID    { return p.id }
-func (p *muxerPeer) Muxer() muxconn.Muxer { return p.mux }
-func (p *muxerPeer) Info() Info           { return p.info }
+func (m *muxPeer) ID() bson.ObjectID    { return m.id }
+func (m *muxPeer) Host() string         { return m.host }
+func (m *muxPeer) Muxer() muxconn.Muxer { return m.mux }
+func (m *muxPeer) Info() Info           { return m.inf }
 
 type Info struct {
 	Name     string `json:"name"`
@@ -45,17 +51,4 @@ type Info struct {
 	Goarch   string `json:"goarch"`
 	Hostname string `json:"hostname"`
 	Semver   string `json:"semver"`
-}
-
-// ConnectListener 节点上下线通知接口。
-type ConnectListener interface {
-	// OnConnection 节点上线事件通知。
-	//
-	// 该方法为同步阻塞方法。
-	OnConnection(peer Peer, connectAt time.Time)
-
-	// OnDisconnection 节点下线事件通知。
-	//
-	// 该方法为同步阻塞方法。
-	OnDisconnection(info Info, connectAt, disconnectAt time.Time)
 }

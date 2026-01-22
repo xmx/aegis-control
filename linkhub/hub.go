@@ -3,96 +3,109 @@ package linkhub
 import (
 	"sync"
 
+	"github.com/xmx/aegis-common/muxlink/muxconn"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Huber interface {
+	// Put 将节点加入到连接池，如果 id 已存在则加入失败，返回 nil。
+	// 加入成功则返回 Peer 节点。
+	Put(id bson.ObjectID, mux muxconn.Muxer, inf Info) Peer
+
 	Get(host string) Peer
 
-	GetByID(id bson.ObjectID) Peer
-
-	Put(p Peer) (succeed bool)
+	GetID(id bson.ObjectID) Peer
 
 	Del(host string) Peer
 
-	DelByID(id bson.ObjectID) Peer
+	DelID(id bson.ObjectID) Peer
 
-	Peers() Peers
+	// Domain 域。
+	Domain() string
+
+	Peers() []Peer
 }
 
-func NewHub(initSize ...int) Huber {
-	size := 64
-	if len(initSize) > 0 && initSize[0] > 0 {
-		size = initSize[0]
+func NewHub(domain string) Huber {
+	return &safeMapHub{
+		domain: domain,
+		peers:  make(map[string]Peer, 16),
 	}
 
-	return &safeMap{
-		peers: make(map[string]Peer, size),
+}
+
+type safeMapHub struct {
+	domain string
+	mutex  sync.RWMutex
+	peers  map[string]Peer
+}
+
+func (s *safeMapHub) Put(id bson.ObjectID, mux muxconn.Muxer, inf Info) Peer {
+	host := resolveHost(id, s.domain)
+	peer := &muxPeer{
+		id:   id,
+		mux:  mux,
+		inf:  inf,
+		host: host,
 	}
-}
 
-type safeMap struct {
-	mutex sync.RWMutex
-	peers map[string]Peer
-}
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-func (sm *safeMap) Get(host string) Peer {
-	sm.mutex.RLock()
-	peer := sm.peers[host]
-	sm.mutex.RUnlock()
+	if _, exists := s.peers[host]; exists {
+		return nil
+	}
+	s.peers[host] = peer
 
 	return peer
 }
 
-func (sm *safeMap) GetByID(id bson.ObjectID) Peer {
-	host := sm.toHost(id)
-	return sm.Get(host)
+func (s *safeMapHub) Get(host string) Peer {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+
+	return s.peers[host]
 }
 
-func (sm *safeMap) Put(p Peer) bool {
-	host := sm.toHost(p.ID())
-	sm.mutex.Lock()
-	defer sm.mutex.Unlock()
+func (s *safeMapHub) GetID(id bson.ObjectID) Peer {
+	host := resolveHost(id, s.domain)
+	return s.Get(host)
+}
 
-	_, exists := sm.peers[host]
-	if exists {
-		return false
+func (s *safeMapHub) Del(host string) Peer {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+
+	peer := s.peers[host]
+	if peer != nil {
+		delete(s.peers, host)
 	}
-
-	sm.peers[host] = p
-
-	return true
-}
-
-func (sm *safeMap) Del(host string) Peer {
-	sm.mutex.Lock()
-	peer := sm.peers[host]
-	delete(sm.peers, host)
-	sm.mutex.Unlock()
 
 	return peer
 }
 
-func (sm *safeMap) DelByID(id bson.ObjectID) Peer {
-	host := sm.toHost(id)
-	return sm.Del(host)
+func (s *safeMapHub) DelID(id bson.ObjectID) Peer {
+	host := resolveHost(id, s.domain)
+	return s.Del(host)
 }
 
-func (sm *safeMap) Peers() Peers {
-	return sm.snapshot()
+func (s *safeMapHub) Domain() string {
+	return s.domain
 }
 
-func (*safeMap) toHost(id bson.ObjectID) string {
-	return id.Hex()
-}
+func (s *safeMapHub) Peers() []Peer {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 
-func (sm *safeMap) snapshot() []Peer {
-	sm.mutex.RLock()
-	peers := make([]Peer, 0, len(sm.peers))
-	for _, peer := range sm.peers {
-		peers = append(peers, peer)
+	res := make([]Peer, 0, len(s.peers))
+	for _, peer := range s.peers {
+		res = append(res, peer)
 	}
-	sm.mutex.RUnlock()
 
-	return peers
+	return res
+}
+
+func resolveHost(id bson.ObjectID, domain string) string {
+	host := id.Hex()
+	return host + "." + domain
 }

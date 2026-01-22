@@ -10,7 +10,7 @@ func WithValue(parent context.Context, p Peer) context.Context {
 		return parent
 	}
 
-	return context.WithValue(parent, httpContextKey, p)
+	return context.WithValue(parent, peerContextKey, p)
 }
 
 func FromContext(ctx context.Context) (Peer, bool) {
@@ -18,7 +18,7 @@ func FromContext(ctx context.Context) (Peer, bool) {
 		return nil, false
 	}
 
-	val := ctx.Value(httpContextKey)
+	val := ctx.Value(peerContextKey)
 	if p, _ := val.(Peer); p != nil {
 		return p, true
 	}
@@ -26,10 +26,8 @@ func FromContext(ctx context.Context) (Peer, bool) {
 	return nil, false
 }
 
-var httpContextKey = tunnelContextKey{name: "http-context-key"}
-
-type tunnelContextKey struct {
+type contextKey struct {
 	name string
 }
 
-func (k tunnelContextKey) String() string { return k.name }
+var peerContextKey = &contextKey{name: "tunnel-peer"}
