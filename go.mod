@@ -4,7 +4,7 @@ go 1.25.6
 
 require (
 	github.com/quic-go/quic-go v0.59.0
-	github.com/xmx/aegis-common v0.0.0-20260126082743-c5acdeb24df7
+	github.com/xmx/aegis-common v0.0.0-20260126105853-fc2cff4877ec
 	github.com/xmx/metrics v0.0.0-20260116025626-8ee725bd7622
 	go.mongodb.org/mongo-driver/v2 v2.4.2
 	go.opentelemetry.io/otel/sdk v1.39.0
